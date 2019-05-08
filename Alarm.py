@@ -27,7 +27,7 @@ class Alarms(object):
                 #for p in data['alarmas']:
                     #print(str(datetime.now().time()))
                     #print(p)
-        except json.decoder.JSONDecodeError:
+        except:
             print("error") 
 
             
@@ -44,19 +44,19 @@ class Alarms(object):
                 #print("added alarm")
                 if alarmtime not in self.nextalarms:
                     self.nextalarms.append(alarmtime)
-        print("array after adding:", self.nextalarms, "\n")
+                    
+        #print("array after adding:", self.nextalarms, "\n")
 
     def playAlarm(self):
-        f = "%H:%M:%S"
         for alarm in self.nextalarms:
             now = datetime.now()
-            print("current alarm:", alarm)
-            print("now:", now)
+            #print("current alarm:", alarm)
+            #print("now:", now)
             if alarm < now:
                 if self.isPlaying == False:
                     #print("Began playing")
                     self.playedAlarm = self.nextalarms.index(alarm)
-                    winsound.PlaySound(self.sound, winsound.SND_ASYNC)
+                    winsound.PlaySound(self.sound, winsound.SND_LOOP + winsound.SND_ASYNC)
                     self.isPlaying = True
                     #self.detectFace()
                     #print("Alarm playing")
@@ -74,16 +74,27 @@ class Alarms(object):
             f.write("no")
             f.close()
 
+
+
     def detectFace(self):
         f = open("detection.txt")
         linea = f.readline()
         if linea == "si":
+        #time.sleep(5)
+            print("apagar alarma")
             self.stopAlarm()        
+
+    def startScript(self):
+        now = datetime.now()
+        for alarm in self.nextalarms:
+            if alarm + timedelta(minutes=-1) < now:
+                os.system('python prueba.py')
 
     def main(self):
         self.findAlarms()
         self.setAlarms()
         self.playAlarm()
+        self.startScript()
         while self.isPlaying == True:
             self.detectFace()
 

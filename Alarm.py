@@ -2,8 +2,7 @@ import json
 from datetime import datetime, date, timedelta
 import os
 import time
-import winsound
-
+import pygame
 #nextalarms = []
 #isPlaying = False
 #sound = "alarm.wav"
@@ -18,6 +17,8 @@ class Alarms(object):
         self.sound = "alarm.wav"
         self.data = []
         self.playedAlarm = None
+        pygame.mixer.init()
+        pygame.mixer.music.load(self.sound)
         
 
     def findAlarms(self):
@@ -55,8 +56,9 @@ class Alarms(object):
             if alarm < now:
                 if self.isPlaying == False:
                     #print("Began playing")
-                    self.playedAlarm = self.nextalarms.index(alarm)
-                    winsound.PlaySound(self.sound, winsound.SND_LOOP + winsound.SND_ASYNC)
+                    self.playedAlarm = self.nextalarms.index(alarm)                    
+                    
+                    pygame.mixer.music.play(-1)
                     self.isPlaying = True
                     #self.detectFace()
                     #print("Alarm playing")
@@ -65,7 +67,7 @@ class Alarms(object):
     def stopAlarm(self):
         if(self.isPlaying):
             #time.sleep(5)
-            winsound.PlaySound(None, winsound.SND_PURGE)   
+            pygame.mixer.music.stop()
             self.nextalarms.pop(self.playedAlarm)
             self.isPlaying = False
             #print("index: \n", self.playedAlarm)
@@ -94,7 +96,7 @@ class Alarms(object):
         self.findAlarms()
         self.setAlarms()
         self.playAlarm()
-        self.startScript()
+        #self.startScript()
         while self.isPlaying == True:
             self.detectFace()
 
